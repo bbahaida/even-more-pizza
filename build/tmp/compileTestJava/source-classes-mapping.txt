@@ -1,0 +1,6 @@
+fr/alis/hashcode/utils/EvenMorePizzaReaderTest.java
+ fr.alis.hashcode.utils.EvenMorePizzaReaderTest
+fr/alis/hashcode/utils/EvenMorePizzaWriterTest.java
+ fr.alis.hashcode.utils.EvenMorePizzaWriterTest
+fr/alis/hashcode/utils/EvenMorePizzaProcessorTest.java
+ fr.alis.hashcode.utils.EvenMorePizzaProcessorTest
