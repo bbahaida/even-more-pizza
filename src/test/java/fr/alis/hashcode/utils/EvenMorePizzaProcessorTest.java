@@ -14,25 +14,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EvenMorePizzaProcessorTest {
 
     private EvenMorePizzaProcessor processor = new EvenMorePizzaProcessor();
-
     Pizza pizza1 = Pizza.builder()
             .total(3)
+            .index(0)
             .ingredients(Lists.list("onion", "pepper", "olive"))
             .build();
     Pizza pizza2 = Pizza.builder()
             .total(3)
+            .index(1)
             .ingredients(Lists.list("tomato", "mushroom", "basil"))
             .build();
     Pizza pizza3 = Pizza.builder()
             .total(3)
+            .index(2)
             .ingredients(Lists.list("chicken", "mushroom", "pepper"))
             .build();
     Pizza pizza4 = Pizza.builder()
             .total(3)
+            .index(3)
             .ingredients(Lists.list("tomato", "mushroom", "basil"))
             .build();
     Pizza pizza5 = Pizza.builder()
             .total(2)
+            .index(4)
             .ingredients(Lists.list("chicken", "basil"))
             .build();
     List<Pizza> pizzas = Lists.list(
@@ -48,20 +52,17 @@ public class EvenMorePizzaProcessorTest {
             .teamsOfFour(1)
             .pizzas(pizzas)
             .build();
+
+    GAParams params = GAParams.builder()
+            .maxGeneration(1000)
+            .mutationRate(0.5)
+            .tournamentSize(10)
+            .build();
     @Test
     public void write_ShouldReturnOutputContains2Orders() {
 
-        EvenMorePizzaOutput output = processor.process(input);
-
-        assertThat(output.getTotalTeams()).isEqualTo(2);
-        assertThat(output.getOrders().size()).isEqualTo(2);
-        assertThat(output.getOrders().get(0).getTotal()).isEqualTo(2);
-        assertThat(output.getOrders().get(0).getPizzaIndexes().get(0)).isEqualTo(1);
-        assertThat(output.getOrders().get(1).getPizzaIndexes().get(0)).isZero();
+        EvenMorePizzaOutput output = processor.process(input, params);
+        assertThat(output.getScore()).isGreaterThan(70);
     }
 
-    @Test
-    public void getTotal_ShouldReturn2(){
-        assertThat(processor.getTotal(input)).isEqualTo(2);
-    }
 }

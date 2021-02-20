@@ -12,8 +12,8 @@ public class EvenMorePizzaReaderTest {
 
     @Test
     public void read_ShouldReturn5AvailablePizzas(){
-        EvenMorePizzaInput input = reader.read("src/test/resources/test.in");
-        Assertions.assertThat(input.getAvailablePizza()).isEqualTo(5);
+        EvenMorePizzaInput input = reader.read("src/test/resources/b_little_bit_of_everything.in");
+        Assertions.assertThat(input.getAvailablePizza()).isEqualTo(500);
     }
 
 }

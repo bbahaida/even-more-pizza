@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Data
 public class PossibleSolution {
@@ -12,11 +13,9 @@ public class PossibleSolution {
     private List<Team> teams = new ArrayList<>();
     private List<Pizza> availablePizza;
     private Random randomGenerator = new Random();
-    private int populationSize;
 
     public PossibleSolution(EvenMorePizzaInput input) {
         this.input = input;
-        populationSize = input.getAvailablePizza();
         availablePizza = input.getPizzas();
         initialize();
     }
@@ -24,7 +23,7 @@ public class PossibleSolution {
     private void initialize() {
         int members = 0;
         do {
-            members = randomGenerator.nextInt(2) + 2;
+            members = randomGenerator.nextInt(3) + 2;
             Team team = new Team();
             team.setMembers(members);
             if (members <= availablePizza.size() && teamAvailable(members)) {
@@ -37,7 +36,15 @@ public class PossibleSolution {
                 teams.add(team);
                 decreaseTeam(members);
             }
-        } while (members <= availablePizza.size() || availablePizza.size() > 1 );
+        } while (members <= availablePizza.size() && deliverable(availablePizza.size()));
+    }
+
+    private boolean deliverable(int size) {
+        int dividableBy2 = size / 2;
+        int dividableBy3 = size / 3;
+        return (dividableBy2 >= 1 || dividableBy3 >= 1)
+                && ((dividableBy2 > 0 && teamAvailable(2))
+                || (dividableBy3 > 0 && teamAvailable(3)));
     }
 
     private void decreaseTeam(int members) {
@@ -66,5 +73,26 @@ public class PossibleSolution {
 
     public long getScore() {
         return teams.stream().mapToLong(Team::getScore).sum();
+    }
+
+    public EvenMorePizzaOutput asOutput() {
+        return EvenMorePizzaOutput.builder()
+                .totalTeams(teams.size())
+                .orders(getOrders())
+                .score(getScore())
+                .build();
+    }
+
+    private List<PizzaOrder> getOrders() {
+        return teams.stream().map(team ->
+                PizzaOrder.builder()
+                        .total(team.getMembers())
+                        .pizzaIndexes(getPizzaIndexes(team))
+                        .build()
+        ).collect(Collectors.toList());
+    }
+
+    private List<Integer> getPizzaIndexes(Team team) {
+        return team.getPizzas().stream().map(Pizza::getIndex).collect(Collectors.toList());
     }
 }

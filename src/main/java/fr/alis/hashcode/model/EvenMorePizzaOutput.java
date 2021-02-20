@@ -13,5 +13,6 @@ import java.util.List;
 @Builder
 public class EvenMorePizzaOutput {
     private int totalTeams;
+    private long score;
     private List<PizzaOrder> orders;
 }

@@ -5,6 +5,10 @@ import fr.alis.hashcode.model.EvenMorePizzaOutput;
 import fr.alis.hashcode.utils.EvenMorePizzaProcessor;
 import fr.alis.hashcode.utils.EvenMorePizzaReader;
 import fr.alis.hashcode.utils.EvenMorePizzaWriter;
+import fr.alis.hashcode.utils.GAParams;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Application {
     private EvenMorePizzaReader reader;
@@ -16,18 +20,35 @@ public class Application {
         processor = new EvenMorePizzaProcessor();
     }
 
-    public void solve() {
-        String inputFilePath = "";
+    public static void main(String[] args) {
+        Application app = new Application();
+        List<String> files = Arrays.asList("a_example",
+                "b_little_bit_of_everything",
+                "c_many_ingredients",
+                "d_many_pizzas",
+                "e_many_teams");
+        files.forEach(app::solve);
+
+    }
+
+    public void solve(String filename) {
+        String prefix = "src/main/resources/";
+        String inputFilePath = prefix + filename+".in";
         // read the file
         EvenMorePizzaInput input = reader.read(inputFilePath);
 
 
         // process the data
-
-        EvenMorePizzaOutput output = processor.process(input);
+        GAParams params = GAParams.builder()
+                .maxGeneration(5)
+                .mutationRate(0.05)
+                .tournamentSize(10)
+                .populationSize(30)
+                .build();
+        EvenMorePizzaOutput output = processor.process(input, params);
 
         // write the data
-        String outputFilePath = "";
+        String outputFilePath = prefix + filename+".out";
         writer.write(output, outputFilePath);
     }
 }
