@@ -1,21 +1,0 @@
-
-W
-java:S1854":Remove this useless assignment to local variable "pizzas".(–‚ÕÑ8œöä¹û.
-W
-java:S1854":Remove this useless assignment to local variable "total2".(å½Á¦8œöä¹û.
-H
-java:S1481"+Remove this unused "pizzas" local variable.(–‚ÕÑ8œöä¹û.
-V
-java:S1854":Remove this useless assignment to local variable "total4".(°ÐÞ8´ÿê¹û.
-H
-java:S1481"+Remove this unused "total3" local variable.(æáÁ‚8É—ë¹û.
-W
-java:S1854":Remove this useless assignment to local variable "total3".(æáÁ‚8´ÿê¹û.
-H
-java:S1481"+Remove this unused "total2" local variable.(å½Á¦8œöä¹û.
-V
-java:S1854"9Remove this useless assignment to local variable "total".(èÝÃª8·ËÞ¹û.
-G
-java:S1481"+Remove this unused "total4" local variable.(°ÐÞ8ÅÛë¹û.
-G
-java:S1481"*Remove this unused "total" local variable.(èÝÃª8·ËÞ¹û.

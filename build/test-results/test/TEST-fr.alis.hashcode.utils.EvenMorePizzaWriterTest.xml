@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="fr.alis.hashcode.utils.EvenMorePizzaWriterTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-02-19T13:21:59" hostname="DESKTOP-6K0H1A9" time="0.129">
-  <properties/>
-  <testcase name="write_ShouldWrite3Lines()" classname="fr.alis.hashcode.utils.EvenMorePizzaWriterTest" time="0.129"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

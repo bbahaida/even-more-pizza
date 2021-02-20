@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PizzaIngredient {
+public class Pizza {
     private int total;
     private int index;
     private List<String> ingredients;

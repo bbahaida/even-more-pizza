@@ -1,7 +1,7 @@
 package fr.alis.hashcode.utils;
 
 import fr.alis.hashcode.model.EvenMorePizzaInput;
-import fr.alis.hashcode.model.PizzaIngredient;
+import fr.alis.hashcode.model.Pizza;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class EvenMorePizzaReader {
 
         EvenMorePizzaInput input = new EvenMorePizzaInput();
         boolean firstLine = true;
-        List<PizzaIngredient> ingredients = new ArrayList<>();
+        List<Pizza> ingredients = new ArrayList<>();
         int index = 0;
         for (String line : lines) {
             if (firstLine) {
@@ -39,18 +39,18 @@ public class EvenMorePizzaReader {
                 firstLine = false;
             }
             else {
-                PizzaIngredient pizzaIngredient = PizzaIngredient.builder()
+                Pizza pizza = Pizza.builder()
                         .total(Integer.parseInt(line.substring(0, line.indexOf(' '))))
                         .index(index)
                         .ingredients(Arrays.asList(line.substring(line.indexOf(' ') + 1).split(" ").clone()))
                         .build();
 
-                ingredients.add(pizzaIngredient);
+                ingredients.add(pizza);
                 index+=1;
             }
         }
 
-        input.setIngredients(ingredients);
+        input.setPizzas(ingredients);
         return input;
     }
 

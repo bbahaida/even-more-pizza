@@ -16,5 +16,5 @@ public class EvenMorePizzaInput {
     private int teamsOfTwo;
     private int teamsOfThree;
     private int teamsOfFour;
-    private List<PizzaIngredient> ingredients;
+    private List<Pizza> pizzas;
 }
