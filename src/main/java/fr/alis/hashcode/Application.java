@@ -2,6 +2,7 @@ package fr.alis.hashcode;
 
 import fr.alis.hashcode.model.EvenMorePizzaInput;
 import fr.alis.hashcode.model.EvenMorePizzaOutput;
+import fr.alis.hashcode.model.Population;
 import fr.alis.hashcode.utils.EvenMorePizzaProcessor;
 import fr.alis.hashcode.utils.EvenMorePizzaReader;
 import fr.alis.hashcode.utils.EvenMorePizzaWriter;
@@ -40,12 +41,15 @@ public class Application {
 
         // process the data
         GAParams params = GAParams.builder()
-                .maxGeneration(5)
-                .mutationRate(0.05)
+                .maxGeneration(7)
+                .mutationRate(0.25)
                 .tournamentSize(10)
                 .populationSize(30)
                 .build();
-        EvenMorePizzaOutput output = processor.process(input, params);
+
+        Population population = new Population(30, input);
+        population.initialize();
+        EvenMorePizzaOutput output = processor.process(population, params);
 
         // write the data
         String outputFilePath = prefix + filename+".out";

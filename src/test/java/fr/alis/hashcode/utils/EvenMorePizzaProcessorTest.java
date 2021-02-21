@@ -4,6 +4,7 @@ package fr.alis.hashcode.utils;
 import fr.alis.hashcode.model.EvenMorePizzaInput;
 import fr.alis.hashcode.model.EvenMorePizzaOutput;
 import fr.alis.hashcode.model.Pizza;
+import fr.alis.hashcode.model.Population;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
@@ -54,14 +55,15 @@ public class EvenMorePizzaProcessorTest {
             .build();
 
     GAParams params = GAParams.builder()
-            .maxGeneration(1000)
-            .mutationRate(0.5)
+            .maxGeneration(10)
+            .mutationRate(0.15)
             .tournamentSize(10)
             .build();
     @Test
     public void write_ShouldReturnOutputContains2Orders() {
-
-        EvenMorePizzaOutput output = processor.process(input, params);
+        Population population = new Population(30, input.copy());
+        population.initialize();
+        EvenMorePizzaOutput output = processor.process(population, params);
         assertThat(output.getScore()).isGreaterThan(70);
     }
 

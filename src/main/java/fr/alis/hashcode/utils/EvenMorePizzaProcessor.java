@@ -2,43 +2,43 @@ package fr.alis.hashcode.utils;
 
 import fr.alis.hashcode.model.*;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class EvenMorePizzaProcessor {
     private Random randomGenerator = new Random();
-    public EvenMorePizzaOutput process(EvenMorePizzaInput input, GAParams params) {
-
-        Population population = new Population(params.getPopulationSize(), input.copy());
-
-        // do the fucking job
+    public EvenMorePizzaOutput process(Population population, GAParams params) {
+        PossibleSolution fittestSolution = null;
         int generation = 0;
-        double delta = 1;
-        while (!terminationCondition(generation, params.getMaxGeneration(), delta)) {
-            double oldAverageScore = population.getAverageScore();
-            population = evolvePopulation(population, input.copy(), params);
-            double newAverageScore = population.getAverageScore();
-            //delta = Math.abs(newAverageScore - oldAverageScore);
+        while (!terminationCondition(generation, params.getMaxGeneration())) {
+            population = evolvePopulation(population, params);
             ++generation;
-            System.out.println(String.format("g: %d, fittest score: %d",
-                    generation, population.getFittestSolution().getScore()));
+
+            if (fittestSolution == null || population.getFittestSolution().getScore() > fittestSolution.getScore()) {
+                fittestSolution = population.getFittestSolution().copy();
+                System.out.printf("g: %d, fittest score: %d%n",
+                        generation, population.getFittestSolution().getScore());
+            }
+
         }
 
         // find out the best distribution
-        return population.getFittestSolution().asOutput();
+        return fittestSolution.asOutput();
     }
 
-    private boolean terminationCondition(int generation, int maxGeneration, double delta) {
-        return generation >= maxGeneration || delta < 0.001;
+    private boolean terminationCondition(int generation, int maxGeneration) {
+        return generation >= maxGeneration;
     }
 
-    private Population evolvePopulation(Population population, EvenMorePizzaInput input, GAParams params) {
-        Population newPopulation = new Population(population.size(), input.copy());
-
+    private Population evolvePopulation(Population population, GAParams params) {
+        Population newPopulation = new Population(population.size(), population.getInput().copy());
+        newPopulation.initialize();
         /*for (int i = 0; i < population.size(); i++) {
-            PossibleSolution firstIndividual = randomSelection(population);
-            PossibleSolution secondIndividual = randomSelection(population);
+            PossibleSolution firstIndividual = randomSelection(population, params.getTournamentSize());
+            PossibleSolution secondIndividual = randomSelection(population, params.getTournamentSize());
 
-            PossibleSolution newIndividual = crossover(firstIndividual, secondIndividual);
+            PossibleSolution newIndividual = crossover(firstIndividual, secondIndividual, params.getCrossoverRate());
             newPopulation.saveSolution(i, newIndividual);
         }*/
 
@@ -74,13 +74,40 @@ public class EvenMorePizzaProcessor {
         return solution;
     }
 
-    private PossibleSolution crossover(PossibleSolution firstIndividual, PossibleSolution secondIndividual) {
-        return null;
+    private PossibleSolution crossover(PossibleSolution firstIndividual,
+                                       PossibleSolution secondIndividual,
+                                       double crossoverRate) {
+
+        PossibleSolution newSolution = firstIndividual.copy();
+        int size = newSolution.getTeams().size();
+        for (int i = 0; i < size; i++) {
+            if (Math.random() < crossoverRate) {
+                int randomIndex = randomGenerator.nextInt(size);
+                Team team = newSolution.getTeams().get(randomIndex);
+                List<Team> teamsOfB = getTeamsOf(secondIndividual, team.getMembers());
+                int bound = teamsOfB.size();
+                if (bound > 0) {
+                    int randomBIndex = randomGenerator.nextInt(bound);
+                    Team team2 = teamsOfB.get(randomBIndex);
+
+                    newSolution.getTeams().remove(randomIndex);
+                    newSolution.getTeams().add(randomIndex, team2);
+                }
+
+
+            }
+        }
+        return newSolution;
     }
 
-    private PossibleSolution randomSelection(Population population, EvenMorePizzaInput input, int tournamentSize) {
-        Population newPopulation = new Population(tournamentSize, input.copy());
+    private List<Team> getTeamsOf(PossibleSolution solution, int teamSize) {
+        return solution.getTeams().stream()
+                .filter(team -> team.getMembers() == teamSize).collect(Collectors.toList());
+    }
 
+    private PossibleSolution randomSelection(Population population, int tournamentSize) {
+        Population newPopulation = new Population(tournamentSize, population.getInput().copy());
+        newPopulation.initialize();
         for (int i = 0; i < tournamentSize; i++) {
             int randomIndex = (int) (Math.random() * population.size());
             newPopulation.saveSolution(i, population.getSolution(randomIndex));

@@ -17,5 +17,7 @@ public class GAParams {
     @Builder.Default
     private int populationSize = 100;
     @Builder.Default
+    private double crossoverRate = 0.5;
+    @Builder.Default
     private double mutationRate = 0.15;
 }

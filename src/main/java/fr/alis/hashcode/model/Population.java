@@ -7,12 +7,13 @@ import java.util.List;
 public class Population {
     private List<PossibleSolution> possibleSolutions = new ArrayList<>();
     private int size;
+    private EvenMorePizzaInput input;
     public Population(int size, EvenMorePizzaInput input) {
         this.size = size;
-        initialize(size, input.copy());
+        this.input = input;
     }
 
-    private void initialize(int size, EvenMorePizzaInput input) {
+    public void initialize() {
         for (int i = 0; i < size; i++) {
             possibleSolutions.add(new PossibleSolution(input.copy()));
         }
@@ -29,7 +30,9 @@ public class Population {
     }
 
     public void saveSolution(int i, PossibleSolution newIndividual) {
-        possibleSolutions.remove(i);
+        if (possibleSolutions.size() > i) {
+            possibleSolutions.remove(i);
+        }
         possibleSolutions.add(i, newIndividual);
     }
 
@@ -40,5 +43,9 @@ public class Population {
     public double getAverageScore() {
         long sum = possibleSolutions.stream().mapToLong(PossibleSolution::getScore).sum();
         return (double) sum / possibleSolutions.size();
+    }
+
+    public EvenMorePizzaInput getInput() {
+        return this.input;
     }
 }

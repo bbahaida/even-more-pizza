@@ -1,6 +1,9 @@
 package fr.alis.hashcode.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +11,9 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PossibleSolution {
     private EvenMorePizzaInput input;
     private List<Team> teams = new ArrayList<>();
@@ -18,6 +24,15 @@ public class PossibleSolution {
         this.input = input;
         availablePizza = input.getPizzas();
         initialize();
+    }
+
+    public PossibleSolution copy() {
+        return PossibleSolution.builder()
+                .availablePizza(this.availablePizza)
+                .input(input.copy())
+                .randomGenerator(randomGenerator)
+                .teams(teams.stream().collect(Collectors.toList()))
+                .build();
     }
 
     private void initialize() {
