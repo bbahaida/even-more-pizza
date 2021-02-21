@@ -34,22 +34,22 @@ public class Application {
                 "e_many_teams");
 
         GAParams paramsA = GAParams.builder()
-                .maxGeneration(10)
+                .maxGeneration(5)
                 .mutationRate(0.35)
                 .tournamentSize(10)
                 .populationSize(100)
                 .filename(files.get(0))
                 .build();
         GAParams paramsB = GAParams.builder()
-                .maxGeneration(15)
+                .maxGeneration(10)
                 .mutationRate(0.25)
                 .tournamentSize(10)
                 .populationSize(200)
                 .filename(files.get(1))
                 .build();
         GAParams paramsC = GAParams.builder()
-                .maxGeneration(15)
-                .mutationRate(0.25)
+                .maxGeneration(10)
+                .mutationRate(0.55)
                 .tournamentSize(10)
                 .populationSize(400)
                 .filename(files.get(2))
