@@ -1,21 +1,12 @@
-package fr.alis.hashcode.engine;
+package fr.alis.hashcode.model;
 
-
-import fr.alis.hashcode.engine.EvenMorePizzaEngine;
-import fr.alis.hashcode.model.EvenMorePizzaInput;
-import fr.alis.hashcode.model.EvenMorePizzaOutput;
-import fr.alis.hashcode.model.Pizza;
-import fr.alis.hashcode.utils.GAParams;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class EvenMorePizzaEngineTest {
-
-    private EvenMorePizzaEngine processor = new EvenMorePizzaEngine();
+public class DistributionTest {
     Pizza pizza1 = Pizza.builder()
             .total(3)
             .index(0)
@@ -54,17 +45,11 @@ public class EvenMorePizzaEngineTest {
             .teamsOfFour(1)
             .pizzas(pizzas)
             .build();
-
-    GAParams params = GAParams.builder()
-            .maxGeneration(10)
-            .mutationRate(0.15)
-            .tournamentSize(10)
-            .build();
-
     @Test
-    public void write_ShouldReturnOutputContains2Orders() {
-        EvenMorePizzaOutput output = processor.process(input, params);
-        assertThat(output.getScore()).isGreaterThan(70);
+    public void initialize_ShouldNotBeEmpty(){
+        Distribution p = new Distribution(input);
+        long score = p.getScore();
+        Assertions.assertThat(p.getTeams().size()).isNotZero();
+        Assertions.assertThat(score).isNotZero();
     }
-
 }

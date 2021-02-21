@@ -1,31 +1,31 @@
 package fr.alis.hashcode;
 
-import fr.alis.hashcode.engine.EvenMorePizzaEngine;
+import fr.alis.hashcode.engine.HashCodeEngine;
+import fr.alis.hashcode.engine.Population;
 import fr.alis.hashcode.model.EvenMorePizzaInput;
 import fr.alis.hashcode.model.EvenMorePizzaOutput;
+import fr.alis.hashcode.model.Pizza;
+import fr.alis.hashcode.model.PizzaPopulation;
 import fr.alis.hashcode.utils.EvenMorePizzaReader;
 import fr.alis.hashcode.utils.EvenMorePizzaWriter;
-import fr.alis.hashcode.utils.GAParams;
+import fr.alis.hashcode.engine.GAParams;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-public class Application {
+public class Application extends HashCodeEngine<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput> {
     private EvenMorePizzaReader reader;
     private EvenMorePizzaWriter writer;
-    private EvenMorePizzaEngine engine;
     private static int score = 0;
 
     public Application() {
         reader = new EvenMorePizzaReader();
         writer = new EvenMorePizzaWriter();
-        engine = new EvenMorePizzaEngine();
     }
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    public static void main(String[] args) {
         Application app = new Application();
         List<String> files = Arrays.asList("a_example",
                 "b_little_bit_of_everything",
@@ -93,7 +93,7 @@ public class Application {
 
         // process the data
         System.out.printf("Start Processing %s %n", params.getFilename());
-        EvenMorePizzaOutput output = engine.process(input, params);
+        EvenMorePizzaOutput output = process(input, params);
 
         System.out.printf("%s selected score: %d %n", params.getFilename(), output.getScore());
 
@@ -103,5 +103,10 @@ public class Application {
         String outputFilePath = prefix + params.getFilename() + ".out";
         writer.write(output, outputFilePath);
         System.out.printf("writing file **** %s **** done%n", params.getFilename());
+    }
+
+    @Override
+    public Population<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput> getInstance(int size, EvenMorePizzaInput input) {
+        return new PizzaPopulation(size, input);
     }
 }

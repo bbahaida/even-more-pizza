@@ -1,5 +1,7 @@
 package fr.alis.hashcode.model;
 
+import fr.alis.hashcode.engine.Gene;
+import fr.alis.hashcode.engine.PossibleSolution;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,24 +16,24 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PossibleSolution {
+public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput> {
     private EvenMorePizzaInput input;
     private List<Team> teams = new ArrayList<>();
     private List<Pizza> availablePizza;
     private Random randomGenerator = new Random();
 
-    public PossibleSolution(EvenMorePizzaInput input) {
+    public Distribution(EvenMorePizzaInput input) {
         this.input = input;
         availablePizza = input.getPizzas();
         initialize();
     }
 
-    public PossibleSolution copy() {
-        return PossibleSolution.builder()
+    public PossibleSolution<Pizza, EvenMorePizzaOutput> copy() {
+        return Distribution.builder()
                 .availablePizza(this.availablePizza)
                 .input(input.copy())
                 .randomGenerator(randomGenerator)
-                .teams(teams.stream().collect(Collectors.toList()))
+                .teams(new ArrayList<>(teams))
                 .build();
     }
 
@@ -90,6 +92,7 @@ public class PossibleSolution {
         return teams.stream().mapToLong(Team::getScore).sum();
     }
 
+    @Override
     public EvenMorePizzaOutput asOutput() {
         return EvenMorePizzaOutput.builder()
                 .totalTeams(teams.size())
@@ -109,5 +112,25 @@ public class PossibleSolution {
 
     private List<Integer> getPizzaIndexes(Team team) {
         return team.getPizzas().stream().map(Pizza::getIndex).collect(Collectors.toList());
+    }
+
+    @Override
+    public int getSize() {
+        return getTeams().size();
+    }
+
+    @Override
+    public void swap(Gene<Pizza> geneA, Gene<Pizza> geneB) {
+        geneA.swap(geneB);
+        geneB.swap(geneA);
+    }
+
+    @Override
+    public Gene<Pizza> getGene() {
+        int teamIndex = randomGenerator.nextInt(teams.size());
+        Team team = teams.get(teamIndex);
+        int pizzaIndex = randomGenerator.nextInt(team.getPizzas().size());
+        team.setReference(pizzaIndex);
+        return team.copy();
     }
 }

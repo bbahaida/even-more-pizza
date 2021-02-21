@@ -1,12 +1,25 @@
-package fr.alis.hashcode.model;
+package fr.alis.hashcode.engine;
 
-import org.assertj.core.api.Assertions;
+
+import fr.alis.hashcode.model.EvenMorePizzaInput;
+import fr.alis.hashcode.model.EvenMorePizzaOutput;
+import fr.alis.hashcode.model.Pizza;
+import fr.alis.hashcode.model.PizzaPopulation;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class PossibleSolutionTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class HashCodeEngineTest {
+
+    private final HashCodeEngine<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput> processor = new HashCodeEngine<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput>() {
+        @Override
+        public Population<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput> getInstance(int size, EvenMorePizzaInput input) {
+            return new PizzaPopulation(size, input);
+        }
+    };
     Pizza pizza1 = Pizza.builder()
             .total(3)
             .index(0)
@@ -45,11 +58,17 @@ public class PossibleSolutionTest {
             .teamsOfFour(1)
             .pizzas(pizzas)
             .build();
+
+    GAParams params = GAParams.builder()
+            .maxGeneration(10)
+            .mutationRate(0.15)
+            .tournamentSize(10)
+            .build();
+
     @Test
-    public void initialize_ShouldNotBeEmpty(){
-        PossibleSolution p = new PossibleSolution(input);
-        long score = p.getScore();
-        Assertions.assertThat(p.getTeams().size()).isNotZero();
-        Assertions.assertThat(score).isNotZero();
+    public void write_ShouldReturnOutputContains2Orders() {
+        EvenMorePizzaOutput output = processor.process(input, params);
+        assertThat(output.getScore()).isGreaterThan(70);
     }
+
 }

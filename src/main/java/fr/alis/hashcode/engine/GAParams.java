@@ -1,4 +1,4 @@
-package fr.alis.hashcode.utils;
+package fr.alis.hashcode.engine;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
