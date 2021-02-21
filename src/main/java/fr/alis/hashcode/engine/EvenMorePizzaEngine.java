@@ -93,8 +93,6 @@ public class EvenMorePizzaEngine {
                     newSolution.getTeams().remove(randomIndex);
                     newSolution.getTeams().add(randomIndex, team2);
                 }
-
-
             }
         }
         return newSolution;

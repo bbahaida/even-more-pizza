@@ -20,4 +20,5 @@ public class GAParams {
     private double crossoverRate = 0.5;
     @Builder.Default
     private double mutationRate = 0.15;
+    private String filename;
 }

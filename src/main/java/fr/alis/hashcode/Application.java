@@ -32,15 +32,46 @@ public class Application {
                 "c_many_ingredients",
                 "d_many_pizzas",
                 "e_many_teams");
-        GAParams params = GAParams.builder()
+
+        GAParams paramsA = GAParams.builder()
                 .maxGeneration(10)
                 .mutationRate(0.35)
                 .tournamentSize(10)
                 .populationSize(100)
+                .filename(files.get(0))
                 .build();
-        System.out.printf("engine params: %s %n", params.toString());
+        GAParams paramsB = GAParams.builder()
+                .maxGeneration(15)
+                .mutationRate(0.25)
+                .tournamentSize(10)
+                .populationSize(200)
+                .filename(files.get(1))
+                .build();
+        GAParams paramsC = GAParams.builder()
+                .maxGeneration(15)
+                .mutationRate(0.25)
+                .tournamentSize(10)
+                .populationSize(400)
+                .filename(files.get(2))
+                .build();
+        GAParams paramsD = GAParams.builder()
+                .maxGeneration(7)
+                .mutationRate(0.35)
+                .tournamentSize(10)
+                .populationSize(20)
+                .filename(files.get(3))
+                .build();
+        GAParams paramsE = GAParams.builder()
+                .maxGeneration(7)
+                .mutationRate(0.35)
+                .tournamentSize(10)
+                .populationSize(20)
+                .filename(files.get(4))
+                .build();
+        List<GAParams> gaParams = Arrays.asList(paramsA, paramsB, paramsC, paramsD, paramsE);
+
         Instant start = Instant.now();
-        files.parallelStream().forEach(file -> app.solve(file, params));
+        gaParams.parallelStream().forEach(app::solve);
         Instant finish = Instant.now();
         long timeElapsed = Duration.between(start, finish).toMillis();
         System.out.printf("solving the %d files took %d s%n", files.size(), timeElapsed / 1000);
@@ -50,27 +81,27 @@ public class Application {
 
     }
 
-    public void solve(String filename, GAParams params) {
-
-        System.out.printf("reading file **** %s **** started%n", filename);
+    public void solve(GAParams params) {
+        System.out.printf("engine params: %s %n", params.toString());
+        System.out.printf("reading file **** %s **** started%n", params.getFilename());
         String prefix = "src/main/resources/";
-        String inputFilePath = prefix + filename + ".in";
+        String inputFilePath = prefix + params.getFilename() + ".in";
         // read the file
         EvenMorePizzaInput input = reader.read(inputFilePath);
 
-        System.out.printf("reading file **** %s **** done%n", filename);
+        System.out.printf("reading file **** %s **** done%n", params.getFilename());
 
         // process the data
-        System.out.printf("Start Processing %s %n", filename);
+        System.out.printf("Start Processing %s %n", params.getFilename());
         EvenMorePizzaOutput output = engine.process(input, params);
 
-        System.out.printf("%s selected score: %d %n", filename, output.getScore());
+        System.out.printf("%s selected score: %d %n", params.getFilename(), output.getScore());
 
         score += output.getScore();
         // write the data
-        System.out.printf("writing file **** %s **** started%n", filename);
-        String outputFilePath = prefix + filename + ".out";
+        System.out.printf("writing file **** %s **** started%n", params.getFilename());
+        String outputFilePath = prefix + params.getFilename() + ".out";
         writer.write(output, outputFilePath);
-        System.out.printf("writing file **** %s **** done%n", filename);
+        System.out.printf("writing file **** %s **** done%n", params.getFilename());
     }
 }
