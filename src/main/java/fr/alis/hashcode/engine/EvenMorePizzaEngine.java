@@ -1,24 +1,24 @@
-package fr.alis.hashcode.utils;
+package fr.alis.hashcode.engine;
 
 import fr.alis.hashcode.model.*;
+import fr.alis.hashcode.utils.GAParams;
 
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class EvenMorePizzaProcessor {
+public class EvenMorePizzaEngine {
     private Random randomGenerator = new Random();
-    public EvenMorePizzaOutput process(Population population, GAParams params) {
+
+    public EvenMorePizzaOutput process(EvenMorePizzaInput input, GAParams params) {
         PossibleSolution fittestSolution = null;
         int generation = 0;
         while (!terminationCondition(generation, params.getMaxGeneration())) {
-            population = evolvePopulation(population, params);
+            Population population = evolvePopulation(input, params);
             ++generation;
 
             if (fittestSolution == null || population.getFittestSolution().getScore() > fittestSolution.getScore()) {
                 fittestSolution = population.getFittestSolution().copy();
-                System.out.printf("g: %d, fittest score: %d%n",
-                        generation, population.getFittestSolution().getScore());
             }
 
         }
@@ -31,8 +31,8 @@ public class EvenMorePizzaProcessor {
         return generation >= maxGeneration;
     }
 
-    private Population evolvePopulation(Population population, GAParams params) {
-        Population newPopulation = new Population(population.size(), population.getInput().copy());
+    private Population evolvePopulation(EvenMorePizzaInput input, GAParams params) {
+        Population newPopulation = new Population(params.getPopulationSize(), input.copy());
         newPopulation.initialize();
         /*for (int i = 0; i < population.size(); i++) {
             PossibleSolution firstIndividual = randomSelection(population, params.getTournamentSize());

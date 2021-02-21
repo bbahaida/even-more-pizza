@@ -1,10 +1,11 @@
-package fr.alis.hashcode.utils;
+package fr.alis.hashcode.engine;
 
 
+import fr.alis.hashcode.engine.EvenMorePizzaEngine;
 import fr.alis.hashcode.model.EvenMorePizzaInput;
 import fr.alis.hashcode.model.EvenMorePizzaOutput;
 import fr.alis.hashcode.model.Pizza;
-import fr.alis.hashcode.model.Population;
+import fr.alis.hashcode.utils.GAParams;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
@@ -12,9 +13,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EvenMorePizzaProcessorTest {
+public class EvenMorePizzaEngineTest {
 
-    private EvenMorePizzaProcessor processor = new EvenMorePizzaProcessor();
+    private EvenMorePizzaEngine processor = new EvenMorePizzaEngine();
     Pizza pizza1 = Pizza.builder()
             .total(3)
             .index(0)
@@ -59,11 +60,10 @@ public class EvenMorePizzaProcessorTest {
             .mutationRate(0.15)
             .tournamentSize(10)
             .build();
+
     @Test
     public void write_ShouldReturnOutputContains2Orders() {
-        Population population = new Population(30, input.copy());
-        population.initialize();
-        EvenMorePizzaOutput output = processor.process(population, params);
+        EvenMorePizzaOutput output = processor.process(input, params);
         assertThat(output.getScore()).isGreaterThan(70);
     }
 
