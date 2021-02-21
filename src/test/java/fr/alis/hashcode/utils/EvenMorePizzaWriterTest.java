@@ -28,7 +28,8 @@ public class EvenMorePizzaWriterTest {
                 .build();
         String path = "src/test/resources/test.out";
         writer.write(output, path);
-        List<String> lines = EvenMorePizzaReader.getLines(path);
+        EvenMorePizzaReader reader = new EvenMorePizzaReader();
+        List<String> lines = reader.getLines(path);
         Assertions.assertThat(lines.size()).isEqualTo(3);
     }
 }

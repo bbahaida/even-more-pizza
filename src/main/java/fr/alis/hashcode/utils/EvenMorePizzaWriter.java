@@ -1,13 +1,12 @@
 package fr.alis.hashcode.utils;
 
+import fr.alis.hashcode.engine.Writer;
 import fr.alis.hashcode.model.EvenMorePizzaOutput;
-import lombok.SneakyThrows;
 
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EvenMorePizzaWriter {
+public class EvenMorePizzaWriter implements Writer<EvenMorePizzaOutput> {
     public void write(EvenMorePizzaOutput output, String path) {
         writeLines(convertToLines(output), path);
     }
@@ -22,14 +21,5 @@ public class EvenMorePizzaWriter {
             lines.add(line.toString());
         });
         return lines;
-    }
-
-    @SneakyThrows
-    private void writeLines(List<String> lines, String path) {
-        try (FileWriter fileWriter = new FileWriter(path)) {
-            for (String line : lines) {
-                fileWriter.write(line + "\n");
-            }
-        }
     }
 }

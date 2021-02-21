@@ -1,19 +1,15 @@
 package fr.alis.hashcode.utils;
 
+import fr.alis.hashcode.engine.Reader;
 import fr.alis.hashcode.model.EvenMorePizzaInput;
 import fr.alis.hashcode.model.Pizza;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EvenMorePizzaReader {
+public class EvenMorePizzaReader implements Reader<EvenMorePizzaInput> {
     public EvenMorePizzaInput read(String path) {
 
         List<String> lines = getLines(path);
@@ -52,23 +48,5 @@ public class EvenMorePizzaReader {
 
         input.setPizzas(ingredients);
         return input;
-    }
-
-    protected static List<String> getLines(String filepath) {
-
-        Path path = Paths.get(filepath);
-        try (BufferedReader reader = Files.newBufferedReader(path)) {
-            String line;
-            List<String> lines = new ArrayList<>();
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-
-            return lines;
-
-
-        } catch (IOException ex) {
-            throw new RuntimeException("Cannot read file " + path, ex);
-        }
     }
 }
