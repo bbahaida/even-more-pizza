@@ -1,15 +1,19 @@
 package fr.alis.hashcode.engine;
 
-import fr.alis.hashcode.model.EvenMorePizzaOutput;
 import lombok.SneakyThrows;
 
 import java.io.FileWriter;
 import java.util.List;
 
-public interface Writer<O> {
-    void write(O output, String path);
+public abstract class Writer<O> {
+    public void write(O output, String path) {
+        writeLines(convertToLines(output), path);
+    }
+
+    protected abstract List<String> convertToLines(O output);
+
     @SneakyThrows
-    default void writeLines(List<String> lines, String path) {
+    public void writeLines(List<String> lines, String path) {
         try (FileWriter fileWriter = new FileWriter(path)) {
             for (String line : lines) {
                 fileWriter.write(line + "\n");

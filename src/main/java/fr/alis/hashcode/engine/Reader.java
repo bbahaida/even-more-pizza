@@ -8,11 +8,16 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface Reader<I> {
+public abstract class Reader<I> {
 
-    I read(String path);
+    public I read(String path) {
+        List<String> lines = getLines(path);
+        return parse(lines);
+    }
 
-    default List<String> getLines(String filepath) {
+    protected abstract I parse(List<String> lines);
+
+    public List<String> getLines(String filepath) {
 
         Path path = Paths.get(filepath);
         try (BufferedReader reader = Files.newBufferedReader(path)) {

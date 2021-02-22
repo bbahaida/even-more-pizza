@@ -9,15 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EvenMorePizzaReader implements Reader<EvenMorePizzaInput> {
-    public EvenMorePizzaInput read(String path) {
+public class EvenMorePizzaReader extends Reader<EvenMorePizzaInput> {
 
-        List<String> lines = getLines(path);
-
-        return parse(lines);
-    }
-
-    private EvenMorePizzaInput parse(List<String> lines) {
+    protected EvenMorePizzaInput parse(List<String> lines) {
 
         EvenMorePizzaInput input = new EvenMorePizzaInput();
         boolean firstLine = true;
@@ -33,8 +27,7 @@ public class EvenMorePizzaReader implements Reader<EvenMorePizzaInput> {
                 input.setTeamsOfThree(orders.get(2));
                 input.setTeamsOfFour(orders.get(3));
                 firstLine = false;
-            }
-            else {
+            } else {
                 Pizza pizza = Pizza.builder()
                         .total(Integer.parseInt(line.substring(0, line.indexOf(' '))))
                         .index(index)
@@ -42,7 +35,7 @@ public class EvenMorePizzaReader implements Reader<EvenMorePizzaInput> {
                         .build();
 
                 ingredients.add(pizza);
-                index+=1;
+                index += 1;
             }
         }
 

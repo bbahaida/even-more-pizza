@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class PizzaPopulation implements Population<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput> {
+public class PizzaPopulation implements Population<Pizza, EvenMorePizzaOutput> {
     private final List<PossibleSolution<Pizza, EvenMorePizzaOutput>> possibleSolutions = new ArrayList<>();
     private final int size;
     private final EvenMorePizzaInput input;

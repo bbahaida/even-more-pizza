@@ -6,7 +6,7 @@ public abstract class HashCodeEngine<T, I, O> {
         PossibleSolution<T, O> fittestSolution = null;
         int generation = 0;
         while (!terminationCondition(generation, params.getMaxGeneration())) {
-            Population<T, I, O> population = evolvePopulation(input, params);
+            Population<T, O> population = evolvePopulation(input, params);
             ++generation;
 
             PossibleSolution<T, O> solution = population.getFittestSolution();
@@ -25,13 +25,12 @@ public abstract class HashCodeEngine<T, I, O> {
         return generation >= maxGeneration;
     }
 
-    private Population<T,I,O> evolvePopulation(I input, GAParams params) {
-        Population<T,I,O> newPopulation = getInstance(params.getPopulationSize(), input);
+    private Population<T,O> evolvePopulation(I input, GAParams params) {
+        Population<T,O> newPopulation = getInstance(params.getPopulationSize(), input);
         newPopulation.initialize();
 
         for (int i = 0; i < params.getPopulationSize(); i++) {
-            PossibleSolution<T, O> possibleSolution = mutate(newPopulation.getSolution(i), params.getMutationRate());
-            newPopulation.saveSolution(i, possibleSolution);
+            newPopulation.saveSolution(i, mutate(newPopulation.getSolution(i), params.getMutationRate()));
         }
 
         return newPopulation;
@@ -48,6 +47,6 @@ public abstract class HashCodeEngine<T, I, O> {
     }
 
 
-    public abstract Population<T, I, O> getInstance(int size, I input);
+    public abstract Population<T, O> getInstance(int size, I input);
 
 }

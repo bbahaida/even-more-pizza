@@ -6,12 +6,9 @@ import fr.alis.hashcode.model.EvenMorePizzaOutput;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EvenMorePizzaWriter implements Writer<EvenMorePizzaOutput> {
-    public void write(EvenMorePizzaOutput output, String path) {
-        writeLines(convertToLines(output), path);
-    }
+public class EvenMorePizzaWriter extends Writer<EvenMorePizzaOutput> {
 
-    private List<String> convertToLines(EvenMorePizzaOutput output) {
+    protected List<String> convertToLines(EvenMorePizzaOutput output) {
         List<String> lines = new ArrayList<>();
         lines.add(output.getTotalTeams() + "");
 

@@ -106,7 +106,7 @@ public class Application extends HashCodeEngine<Pizza, EvenMorePizzaInput, EvenM
     }
 
     @Override
-    public Population<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput> getInstance(int size, EvenMorePizzaInput input) {
+    public Population<Pizza, EvenMorePizzaOutput> getInstance(int size, EvenMorePizzaInput input) {
         return new PizzaPopulation(size, input);
     }
 }
