@@ -1,5 +1,6 @@
 package fr.alis.hashcode.model;
 
+import fr.alis.hashcode.engine.GAParams;
 import fr.alis.hashcode.engine.Gene;
 import fr.alis.hashcode.engine.PossibleSolution;
 import lombok.AllArgsConstructor;
@@ -7,9 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -38,15 +39,16 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
     }
 
     private void initialize() {
+        Instant start = Instant.now();
         int members = 0;
         do {
-            members = randomGenerator.nextInt(3) + 2;
+            members = getTeamMembers();
             Team team = new Team();
             team.setMembers(members);
             if (members <= availablePizza.size() && teamAvailable(members)) {
                 for (int j = 0; j < members; j++) {
-                    int pizzaIndex = randomGenerator.nextInt(availablePizza.size());
-                    Pizza pizza = availablePizza.get(pizzaIndex);
+                    Pizza pizza = getBestPizza(availablePizza, team.getPizzas());
+                    int pizzaIndex = availablePizza.indexOf(pizza);
                     team.getPizzas().add(pizza);
                     availablePizza.remove(pizzaIndex);
                 }
@@ -54,7 +56,71 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
                 decreaseTeam(members);
             }
         } while (members <= availablePizza.size() && deliverable(availablePizza.size()));
+        Instant finish = Instant.now();
+        long timeElapsed = Duration.between(start, finish).toMillis();
+        System.out.printf("initializing took %d ms%n", timeElapsed);
     }
+
+    private int getTeamMembers() {
+        if (input.getTeamsOfFour() > 0 && availablePizza.size() >= 4) {
+            return 4;
+        } else if (input.getTeamsOfThree() > 0 && availablePizza.size() >= 3) {
+            return 3;
+        }
+        return 2;
+    }
+
+    private Pizza getBestPizza(List<Pizza> availablePizza, List<Pizza> pizzas) {
+        return simulatedAnnealing(availablePizza, pizzas);
+    }
+
+
+    private Pizza simulatedAnnealing(List<Pizza> availablePizza, List<Pizza> pizzas) {
+        Pizza bestPizza = null;
+        Pizza currentPizza = null;
+        List<String> teamIngredients = pizzas.parallelStream().flatMap(p -> p.getIngredients().stream()).collect(Collectors.toList());
+
+        int temp = 100;
+        int startIndex = 0;
+        double coolingRate = 0.4;
+        while (temp > 1) {
+            int index = randomGenerator.nextInt(availablePizza.size() - startIndex) + startIndex;
+            Pizza pizza = availablePizza.get(index);
+            if (currentPizza == null) {
+                currentPizza = pizza;
+                bestPizza = pizza;
+            } else {
+                int currentE = getEnergy(currentPizza, teamIngredients);
+                int nextE = getEnergy(pizza, teamIngredients);
+
+                if (acceptanceProbability(currentE, nextE, temp) > Math.random()) {
+                    currentE = nextE;
+                    currentPizza = pizza;
+                    startIndex = index;
+                }
+                if (getEnergy(bestPizza, teamIngredients) < currentE) {
+                    bestPizza = currentPizza;
+                }
+                temp *= 1 - coolingRate;
+            }
+
+        }
+        return bestPizza;
+    }
+
+    private double acceptanceProbability(int currentE, int nextE, int temp) {
+        if (nextE > currentE) {
+            return 1;
+        }
+        return Math.exp((currentE-nextE)/(double)temp);
+    }
+
+    private int getEnergy(Pizza pizza, List<String> teamIngredients) {
+        Set<String> ingredients = new HashSet<>(pizza.getIngredients());
+        ingredients.addAll(teamIngredients);
+        return ingredients.size();
+    }
+
 
     private boolean deliverable(int size) {
         int dividableBy2 = size / 2;
@@ -67,11 +133,9 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
     private void decreaseTeam(int members) {
         if (members == 2) {
             input.setTeamsOfTwo(input.getTeamsOfTwo() - 1);
-        }
-        else if (members == 3) {
+        } else if (members == 3) {
             input.setTeamsOfThree(input.getTeamsOfThree() - 1);
-        }
-        else {
+        } else {
             input.setTeamsOfFour(input.getTeamsOfFour() - 1);
         }
     }
@@ -79,11 +143,9 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
     private boolean teamAvailable(int members) {
         if (members == 2) {
             return input.getTeamsOfTwo() > 0;
-        }
-        else if (members == 3) {
+        } else if (members == 3) {
             return input.getTeamsOfThree() > 0;
-        }
-        else {
+        } else {
             return input.getTeamsOfFour() > 0;
         }
     }
@@ -93,11 +155,13 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
     }
 
     @Override
-    public EvenMorePizzaOutput asOutput() {
+    public EvenMorePizzaOutput asOutput(GAParams params, int generation) {
         return EvenMorePizzaOutput.builder()
                 .totalTeams(teams.size())
                 .orders(getOrders())
                 .score(getScore())
+                .generation(generation)
+                .params(params)
                 .build();
     }
 
@@ -132,5 +196,37 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
         int pizzaIndex = randomGenerator.nextInt(team.getPizzas().size());
         team.setReference(pizzaIndex);
         return team.copy();
+    }
+
+    @Override
+    public void crossover(int reference, Gene<Pizza> gene) {
+        getTeams().remove(reference);
+        getTeams().add(reference, (Team) gene);
+    }
+
+    @Override
+    public Gene<Pizza> getValidGene(int reference, PossibleSolution<Pizza, EvenMorePizzaOutput> solution, Gene<Pizza> gene) {
+        Team team = (Team) gene;
+        return Team.builder()
+                .members(team.getMembers())
+                .pizzas(getValidPizzas(reference, (Distribution) solution))
+                .build();
+    }
+
+    private List<Pizza> getValidPizzas(int reference, Distribution solution) {
+        return getTeams().stream().flatMap(t -> t.getPizzas().stream())
+                .filter(pizza -> !deliveredPizza(reference, solution))
+                .collect(Collectors.toList());
+    }
+
+    private boolean deliveredPizza(int reference, Distribution solution) {
+        return solution.getTeams().stream().limit(reference)
+                .flatMap(team -> team.getPizzas().stream()).mapToInt(Pizza::getIndex).anyMatch(i -> i == reference);
+    }
+
+    @Override
+    public void saveGene(int i, Gene<Pizza> gene) {
+        getTeams().remove(i);
+        getTeams().add(i, (Team) gene);
     }
 }

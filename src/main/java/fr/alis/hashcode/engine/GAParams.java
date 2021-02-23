@@ -11,6 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GAParams {
     @Builder.Default
+    private double deltaVariance = 0;
+    @Builder.Default
+    private int deltaConstant = 0;
+    @Builder.Default
+    private int deltaStepper = 0;
+    @Builder.Default
     private int tournamentSize = 10;
     @Builder.Default
     private int maxGeneration = 100;
@@ -20,5 +26,7 @@ public class GAParams {
     private double crossoverRate = 0.5;
     @Builder.Default
     private double mutationRate = 0.15;
+    @Builder.Default
+    private int mutationTotal = 10;
     private String filename;
 }

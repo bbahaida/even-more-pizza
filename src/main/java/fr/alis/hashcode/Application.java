@@ -1,5 +1,6 @@
 package fr.alis.hashcode;
 
+import fr.alis.hashcode.engine.EvolutionStrategy;
 import fr.alis.hashcode.engine.HashCodeEngine;
 import fr.alis.hashcode.engine.Population;
 import fr.alis.hashcode.model.EvenMorePizzaInput;
@@ -16,9 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Application extends HashCodeEngine<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput> {
-    private EvenMorePizzaReader reader;
-    private EvenMorePizzaWriter writer;
-    private static int score = 0;
+    private final EvenMorePizzaReader reader;
+    private final EvenMorePizzaWriter writer;
 
     public Application() {
         reader = new EvenMorePizzaReader();
@@ -34,44 +34,64 @@ public class Application extends HashCodeEngine<Pizza, EvenMorePizzaInput, EvenM
                 "e_many_teams");
 
         GAParams paramsA = GAParams.builder()
-                .maxGeneration(5)
+                .maxGeneration(20)
                 .mutationRate(0.35)
                 .tournamentSize(10)
-                .populationSize(100)
+                .populationSize(10)
                 .filename(files.get(0))
                 .build();
         GAParams paramsB = GAParams.builder()
-                .maxGeneration(10)
-                .mutationRate(0.25)
+                .maxGeneration(20)
+                .mutationRate(0.45)
                 .tournamentSize(10)
-                .populationSize(200)
+                .mutationTotal(20)
+                .populationSize(10)
                 .filename(files.get(1))
+                .deltaConstant(10)
+                .deltaVariance(0.001)
+                .deltaStepper(5)
                 .build();
         GAParams paramsC = GAParams.builder()
-                .maxGeneration(10)
-                .mutationRate(0.55)
+                .maxGeneration(20)
+                .mutationRate(0.25)
                 .tournamentSize(10)
-                .populationSize(400)
+                .populationSize(5)
                 .filename(files.get(2))
+                .mutationTotal(10)
+                .deltaConstant(1000)
+                .deltaVariance(0.001)
+                .deltaStepper(5)
                 .build();
         GAParams paramsD = GAParams.builder()
-                .maxGeneration(7)
-                .mutationRate(0.35)
+                .maxGeneration(1)
+                .mutationRate(0.3)
                 .tournamentSize(10)
-                .populationSize(20)
+                .populationSize(4)
+                .mutationTotal(50)
+                .deltaConstant(100)
+                .deltaVariance(0.001)
+                .deltaStepper(5)
                 .filename(files.get(3))
                 .build();
         GAParams paramsE = GAParams.builder()
-                .maxGeneration(7)
-                .mutationRate(0.35)
+                .maxGeneration(1)
+                .mutationRate(0.3)
                 .tournamentSize(10)
-                .populationSize(20)
+                .populationSize(4)
+                .mutationTotal(50)
+                .deltaConstant(100)
+                .deltaVariance(0.001)
+                .deltaStepper(5)
                 .filename(files.get(4))
                 .build();
         List<GAParams> gaParams = Arrays.asList(paramsA, paramsB, paramsC, paramsD, paramsE);
 
         Instant start = Instant.now();
-        gaParams.parallelStream().forEach(app::solve);
+        long score = gaParams.parallelStream().map(params -> app.solve(params, app.reader, app.writer, EvolutionStrategy.MUTATION))
+                .peek(output -> System.out.printf("******* file: %s, best score: %d, generation: %d *******%n",
+                        output.getParams().getFilename(), output.getScore(), output.getGeneration()))
+                .mapToLong(EvenMorePizzaOutput::getScore)
+                .sum();
         Instant finish = Instant.now();
         long timeElapsed = Duration.between(start, finish).toMillis();
         System.out.printf("solving the %d files took %d s%n", files.size(), timeElapsed / 1000);
@@ -81,29 +101,6 @@ public class Application extends HashCodeEngine<Pizza, EvenMorePizzaInput, EvenM
 
     }
 
-    public void solve(GAParams params) {
-        System.out.printf("engine params: %s %n", params.toString());
-        System.out.printf("reading file **** %s **** started%n", params.getFilename());
-        String prefix = "src/main/resources/";
-        String inputFilePath = prefix + params.getFilename() + ".in";
-        // read the file
-        EvenMorePizzaInput input = reader.read(inputFilePath);
-
-        System.out.printf("reading file **** %s **** done%n", params.getFilename());
-
-        // process the data
-        System.out.printf("Start Processing %s %n", params.getFilename());
-        EvenMorePizzaOutput output = process(input, params);
-
-        System.out.printf("%s selected score: %d %n", params.getFilename(), output.getScore());
-
-        score += output.getScore();
-        // write the data
-        System.out.printf("writing file **** %s **** started%n", params.getFilename());
-        String outputFilePath = prefix + params.getFilename() + ".out";
-        writer.write(output, outputFilePath);
-        System.out.printf("writing file **** %s **** done%n", params.getFilename());
-    }
 
     @Override
     public Population<Pizza, EvenMorePizzaOutput> getInstance(int size, EvenMorePizzaInput input) {

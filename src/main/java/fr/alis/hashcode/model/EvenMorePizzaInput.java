@@ -1,10 +1,12 @@
 package fr.alis.hashcode.model;
 
+import fr.alis.hashcode.engine.GAParams;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +27,7 @@ public class EvenMorePizzaInput {
         teamsOfTwo = input.getTeamsOfTwo();
         teamsOfThree = input.getTeamsOfThree();
         teamsOfFour = input.getTeamsOfFour();
-        pizzas = input.getPizzas().stream().collect(Collectors.toList());
+        pizzas = new ArrayList<>(input.getPizzas());
     }
 
     public EvenMorePizzaInput copy() {

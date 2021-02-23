@@ -67,7 +67,7 @@ public class HashCodeEngineTest {
 
     @Test
     public void write_ShouldReturnOutputContains2Orders() {
-        EvenMorePizzaOutput output = processor.process(input, params);
+        EvenMorePizzaOutput output = processor.process(input, params, EvolutionStrategy.MUTATION);
         assertThat(output.getScore()).isGreaterThan(70);
     }
 

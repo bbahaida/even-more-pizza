@@ -1,5 +1,6 @@
 package fr.alis.hashcode.model;
 
+import fr.alis.hashcode.engine.GAParams;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +15,7 @@ import java.util.List;
 public class EvenMorePizzaOutput {
     private int totalTeams;
     private long score;
+    private int generation;
+    private GAParams params;
     private List<PizzaOrder> orders;
 }
