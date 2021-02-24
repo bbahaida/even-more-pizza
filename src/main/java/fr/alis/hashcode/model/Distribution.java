@@ -58,7 +58,7 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
         } while (members <= availablePizza.size() && deliverable(availablePizza.size()));
         Instant finish = Instant.now();
         long timeElapsed = Duration.between(start, finish).toMillis();
-        System.out.printf("initializing took %d ms%n", timeElapsed);
+        System.out.printf("initializing took %d ms, score: %d%n", timeElapsed, getScore());
     }
 
     private int getTeamMembers() {
@@ -71,7 +71,24 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
     }
 
     private Pizza getBestPizza(List<Pizza> availablePizza, List<Pizza> pizzas) {
-        return simulatedAnnealing(availablePizza, pizzas);
+        return stochastic(availablePizza, pizzas);
+    }
+
+    private Pizza stochastic(List<Pizza> availablePizza, List<Pizza> pizzas) {
+        Pizza bestPizza = null;
+        List<String> teamIngredients = pizzas.parallelStream().flatMap(p -> p.getIngredients().stream()).collect(Collectors.toList());
+        for (int i = 0; i < 50; i++) {
+            int randomIndex = randomGenerator.nextInt(availablePizza.size());
+            Pizza pizza = availablePizza.get(randomIndex);
+            if (bestPizza == null) {
+                bestPizza = pizza;
+            }
+            else if (getScore(bestPizza, teamIngredients) < getScore(pizza, teamIngredients)) {
+                bestPizza = pizza;
+            }
+        }
+
+        return bestPizza;
     }
 
 
@@ -90,15 +107,15 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
                 currentPizza = pizza;
                 bestPizza = pizza;
             } else {
-                int currentE = getEnergy(currentPizza, teamIngredients);
-                int nextE = getEnergy(pizza, teamIngredients);
+                int currentE = getScore(currentPizza, teamIngredients);
+                int nextE = getScore(pizza, teamIngredients);
 
                 if (acceptanceProbability(currentE, nextE, temp) > Math.random()) {
                     currentE = nextE;
                     currentPizza = pizza;
                     startIndex = index;
                 }
-                if (getEnergy(bestPizza, teamIngredients) < currentE) {
+                if (getScore(bestPizza, teamIngredients) < currentE) {
                     bestPizza = currentPizza;
                 }
                 temp *= 1 - coolingRate;
@@ -115,7 +132,7 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
         return Math.exp((currentE-nextE)/(double)temp);
     }
 
-    private int getEnergy(Pizza pizza, List<String> teamIngredients) {
+    private int getScore(Pizza pizza, List<String> teamIngredients) {
         Set<String> ingredients = new HashSet<>(pizza.getIngredients());
         ingredients.addAll(teamIngredients);
         return ingredients.size();
