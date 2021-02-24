@@ -46,11 +46,12 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
             Team team = new Team();
             team.setMembers(members);
             if (members <= availablePizza.size() && teamAvailable(members)) {
-                team.setPizzas(getBestPizza(availablePizza, members));
-                team.getPizzas().forEach(pizza -> {
+                for (int j = 0; j < members; j++) {
+                    Pizza pizza = getBestPizza(availablePizza, team.getPizzas());
                     int pizzaIndex = availablePizza.indexOf(pizza);
+                    team.getPizzas().add(pizza);
                     availablePizza.remove(pizzaIndex);
-                });
+                }
                 teams.add(team);
                 decreaseTeam(members);
             }
@@ -69,34 +70,25 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
         return 2;
     }
 
-    private List<Pizza> getBestPizza(List<Pizza> availablePizza, int members) {
-        return stochastic(availablePizza, members);
+    private Pizza getBestPizza(List<Pizza> availablePizza, List<Pizza> pizzas) {
+        return stochastic(availablePizza, pizzas);
     }
 
-    private List<Pizza> stochastic(List<Pizza> availablePizza, int members) {
+    private Pizza stochastic(List<Pizza> availablePizza, List<Pizza> pizzas) {
         Pizza bestPizza = null;
-        LinkedList<Pizza> bestPizzas = new LinkedList<>();
-        List<String> teamIngredients = bestPizzas.parallelStream().flatMap(p -> p.getIngredients().stream()).collect(Collectors.toList());
-        for (int i = 0; i < 100; i++) {
+        List<String> teamIngredients = pizzas.parallelStream().flatMap(p -> p.getIngredients().stream()).collect(Collectors.toList());
+        for (int i = 0; i < 50; i++) {
             int randomIndex = randomGenerator.nextInt(availablePizza.size());
             Pizza pizza = availablePizza.get(randomIndex);
             if (bestPizza == null) {
                 bestPizza = pizza;
-                bestPizzas.add(pizza);
             }
             else if (getScore(bestPizza, teamIngredients) < getScore(pizza, teamIngredients)) {
                 bestPizza = pizza;
-                bestPizzas.add(pizza);
-                bestPizzas = bestPizzas.stream()
-                        .sorted(Comparator.comparing(Pizza::getTotal).reversed())
-                        .collect(Collectors.toCollection(LinkedList::new));
-            }
-            if (bestPizzas.size() > members) {
-
             }
         }
 
-        return bestPizzas;
+        return bestPizza;
     }
 
 
