@@ -48,8 +48,7 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
             if (members <= availablePizza.size() && teamAvailable(members)) {
                 team.setPizzas(getBestPizza(availablePizza, members));
                 team.getPizzas().forEach(pizza -> {
-                    int pizzaIndex = availablePizza.indexOf(pizza);
-                    availablePizza.remove(pizzaIndex);
+                    availablePizza.removeIf(p -> p.getIndex() == pizza.getIndex());
                 });
                 teams.add(team);
                 decreaseTeam(members);
@@ -77,7 +76,7 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
         Pizza bestPizza = null;
         LinkedList<Pizza> bestPizzas = new LinkedList<>();
         List<String> teamIngredients = bestPizzas.parallelStream().flatMap(p -> p.getIngredients().stream()).collect(Collectors.toList());
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             int randomIndex = randomGenerator.nextInt(availablePizza.size());
             Pizza pizza = availablePizza.get(randomIndex);
             if (bestPizza == null) {
@@ -87,14 +86,14 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
             else if (getScore(bestPizza, teamIngredients) < getScore(pizza, teamIngredients)) {
                 bestPizza = pizza;
                 bestPizzas.add(pizza);
-                bestPizzas = bestPizzas.stream()
-                        .sorted(Comparator.comparing(Pizza::getTotal).reversed())
-                        .collect(Collectors.toCollection(LinkedList::new));
-            }
-            if (bestPizzas.size() > members) {
-
             }
         }
+
+        List<Pizza> bestOfTheBest = new LinkedList<>();
+        for (int j = 0; j < members; j++) {
+            bestOfTheBest.add(simulatedAnnealing(bestPizzas, bestOfTheBest));
+        }
+        bestPizzas = new LinkedList<>(bestOfTheBest);
 
         return bestPizzas;
     }
