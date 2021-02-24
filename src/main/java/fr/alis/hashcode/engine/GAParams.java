@@ -29,4 +29,6 @@ public class GAParams {
     @Builder.Default
     private int mutationTotal = 10;
     private String filename;
+    @Builder.Default
+    private boolean randomize = true;
 }

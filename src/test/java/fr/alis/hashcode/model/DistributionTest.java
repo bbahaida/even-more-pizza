@@ -47,7 +47,7 @@ public class DistributionTest {
             .build();
     @Test
     public void initialize_ShouldNotBeEmpty(){
-        Distribution p = new Distribution(input);
+        Distribution p = new Distribution(input, true);
         long score = p.getScore();
         Assertions.assertThat(p.getTeams().size()).isNotZero();
         Assertions.assertThat(score).isNotZero();

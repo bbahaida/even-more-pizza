@@ -22,10 +22,12 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
     private List<Team> teams = new ArrayList<>();
     private List<Pizza> availablePizza;
     private Random randomGenerator = new Random();
+    private boolean randomize;
 
-    public Distribution(EvenMorePizzaInput input) {
+    public Distribution(EvenMorePizzaInput input, boolean randomize) {
         this.input = input;
         availablePizza = input.getPizzas();
+        this.randomize = randomize;
         initialize();
     }
 
@@ -62,6 +64,9 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
     }
 
     private int getTeamMembers() {
+        if (randomize) {
+            return randomGenerator.nextInt(3) + 2;
+        }
         if (input.getTeamsOfFour() > 0 && availablePizza.size() >= 4) {
             return 4;
         } else if (input.getTeamsOfThree() > 0 && availablePizza.size() >= 3) {
@@ -77,7 +82,7 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
     private Pizza stochastic(List<Pizza> availablePizza, List<Pizza> pizzas) {
         Pizza bestPizza = null;
         List<String> teamIngredients = pizzas.parallelStream().flatMap(p -> p.getIngredients().stream()).collect(Collectors.toList());
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 300; i++) {
             int randomIndex = randomGenerator.nextInt(availablePizza.size());
             Pizza pizza = availablePizza.get(randomIndex);
             if (bestPizza == null) {
@@ -99,7 +104,7 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
 
         int temp = 100;
         int startIndex = 0;
-        double coolingRate = 0.4;
+        double coolingRate = 0.02;
         while (temp > 1) {
             int index = randomGenerator.nextInt(availablePizza.size() - startIndex) + startIndex;
             Pizza pizza = availablePizza.get(index);

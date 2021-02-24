@@ -10,15 +10,17 @@ import java.util.List;
 public class PizzaPopulation implements Population<Pizza, EvenMorePizzaOutput> {
     private final List<PossibleSolution<Pizza, EvenMorePizzaOutput>> possibleSolutions = new ArrayList<>();
     private final int size;
+    private final boolean randomize;
     private final EvenMorePizzaInput input;
-    public PizzaPopulation(int size, EvenMorePizzaInput input) {
+    public PizzaPopulation(int size, EvenMorePizzaInput input, boolean randomize) {
         this.size = size;
         this.input = input;
+        this.randomize = randomize;
     }
 
     public void initialize() {
         for (int i = 0; i < size; i++) {
-            possibleSolutions.add(new Distribution(input.copy()));
+            possibleSolutions.add(new Distribution(input.copy(), randomize));
         }
     }
 

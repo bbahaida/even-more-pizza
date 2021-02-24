@@ -11,7 +11,7 @@ public abstract class HashCodeEngine<T, I, O> {
         double delta = 1000000000000L;
         LinkedList<Long> scores = new LinkedList<>();
         LinkedList<Long> deltas = new LinkedList<>();
-        Population<T, O> population = getInstance(params.getPopulationSize(), input);
+        Population<T, O> population = getInstance(params.getPopulationSize(), input, params.isRandomize());
         while (!terminationCondition(generation, delta, params)) {
 
             ++generation;
@@ -66,7 +66,7 @@ public abstract class HashCodeEngine<T, I, O> {
     }
 
     private Population<T,O> evolvePopulation(I input, GAParams params) {
-        Population<T,O> newPopulation = getInstance(params.getPopulationSize(), input);
+        Population<T,O> newPopulation = getInstance(params.getPopulationSize(), input, params.isRandomize());
         newPopulation.initialize();
 
         for (int i = 0; i < params.getPopulationSize(); i++) {
@@ -76,10 +76,10 @@ public abstract class HashCodeEngine<T, I, O> {
         return newPopulation;
     }
     private Population<T,O> evolvePopulationWithCrossover(I input, GAParams params, Population<T, O> population) {
-        Population<T,O> newPopulation = getInstance(params.getPopulationSize(), input);
+        Population<T,O> newPopulation = getInstance(params.getPopulationSize(), input, params.isRandomize());
         for (int i = 0; i < params.getPopulationSize(); i++) {
-            PossibleSolution<T, O> firstIndividual = randomSelection(population, input, params.getTournamentSize());
-            PossibleSolution<T, O> secondIndividual = randomSelection(population, input, params.getTournamentSize());
+            PossibleSolution<T, O> firstIndividual = randomSelection(population, input, params);
+            PossibleSolution<T, O> secondIndividual = randomSelection(population, input, params);
 
             PossibleSolution<T, O> newIndividual = crossover(firstIndividual, secondIndividual, params.getCrossoverRate());
             newPopulation.saveSolution(i, newIndividual);
@@ -120,16 +120,16 @@ public abstract class HashCodeEngine<T, I, O> {
         return newSolution;
     }
 
-    private PossibleSolution<T, O> randomSelection(Population<T, O> population, I input, int tournamentSize) {
-        Population<T, O> newPopulation = getInstance(tournamentSize, input);
-        for (int i = 0; i < tournamentSize; i++) {
-            int randomIndex = (int) (Math.random() * tournamentSize);
+    private PossibleSolution<T, O> randomSelection(Population<T, O> population, I input, GAParams params) {
+        Population<T, O> newPopulation = getInstance(params.getTournamentSize(), input, params.isRandomize());
+        for (int i = 0; i < params.getTournamentSize(); i++) {
+            int randomIndex = (int) (Math.random() * params.getTournamentSize());
             newPopulation.saveSolution(i, population.getSolution(randomIndex).copy());
         }
         return newPopulation.getFittestSolution();
     }
 
-    public abstract Population<T, O> getInstance(int size, I input);
+    public abstract Population<T, O> getInstance(int size, I input, boolean randomize);
 
     public O solve(GAParams params, Reader<I> reader, Writer<O> writer, EvolutionStrategy strategy) {
         System.out.printf("engine params: %s %n", params.toString());

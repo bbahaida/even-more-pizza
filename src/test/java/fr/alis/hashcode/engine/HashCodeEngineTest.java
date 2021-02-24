@@ -16,8 +16,8 @@ public class HashCodeEngineTest {
 
     private final HashCodeEngine<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput> processor = new HashCodeEngine<Pizza, EvenMorePizzaInput, EvenMorePizzaOutput>() {
         @Override
-        public Population<Pizza, EvenMorePizzaOutput> getInstance(int size, EvenMorePizzaInput input) {
-            return new PizzaPopulation(size, input);
+        public Population<Pizza, EvenMorePizzaOutput> getInstance(int size, EvenMorePizzaInput input, boolean randomize) {
+            return new PizzaPopulation(size, input, randomize);
         }
     };
     Pizza pizza1 = Pizza.builder()
