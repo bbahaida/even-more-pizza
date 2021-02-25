@@ -11,9 +11,10 @@ import java.util.stream.Collectors;
 
 public class EvenMorePizzaReader extends Reader<EvenMorePizzaInput> {
 
-    protected EvenMorePizzaInput parse(List<String> lines) {
+    protected EvenMorePizzaInput parse(List<String> lines, String filename) {
 
         EvenMorePizzaInput input = new EvenMorePizzaInput();
+        input.setFilename(filename);
         boolean firstLine = true;
         List<Pizza> ingredients = new ArrayList<>();
         int index = 0;

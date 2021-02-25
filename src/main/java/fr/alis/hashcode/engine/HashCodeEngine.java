@@ -5,6 +5,7 @@ import java.util.stream.IntStream;
 
 public abstract class HashCodeEngine<T, I, O> {
     private static int score = 0;
+
     public O process(I input, GAParams params, EvolutionStrategy strategy) {
         PossibleSolution<T, O> fittestSolution = null;
         int generation = 0;
@@ -12,7 +13,8 @@ public abstract class HashCodeEngine<T, I, O> {
         LinkedList<Long> scores = new LinkedList<>();
         LinkedList<Long> deltas = new LinkedList<>();
         Population<T, O> population = getInstance(params.getPopulationSize(), input, params.isRandomize());
-        while (!terminationCondition(generation, delta, params)) {
+        population.initialize();
+         while (!terminationCondition(generation, delta, params)) {
 
             ++generation;
 
@@ -55,7 +57,6 @@ public abstract class HashCodeEngine<T, I, O> {
                     params.getFilename(), generation, solution.getScore(), delta);
 
         }
-
         // find out the best distribution
         return fittestSolution.asOutput(params, generation);
     }
@@ -65,8 +66,8 @@ public abstract class HashCodeEngine<T, I, O> {
                 || (params.getDeltaVariance() > 0 && delta < params.getDeltaVariance());
     }
 
-    private Population<T,O> evolvePopulation(I input, GAParams params) {
-        Population<T,O> newPopulation = getInstance(params.getPopulationSize(), input, params.isRandomize());
+    private Population<T, O> evolvePopulation(I input, GAParams params) {
+        Population<T, O> newPopulation = getInstance(params.getPopulationSize(), input, params.isRandomize());
         newPopulation.initialize();
 
         for (int i = 0; i < params.getPopulationSize(); i++) {
@@ -75,8 +76,9 @@ public abstract class HashCodeEngine<T, I, O> {
 
         return newPopulation;
     }
-    private Population<T,O> evolvePopulationWithCrossover(I input, GAParams params, Population<T, O> population) {
-        Population<T,O> newPopulation = getInstance(params.getPopulationSize(), input, params.isRandomize());
+
+    private Population<T, O> evolvePopulationWithCrossover(I input, GAParams params, Population<T, O> population) {
+        Population<T, O> newPopulation = getInstance(params.getPopulationSize(), input, params.isRandomize());
         for (int i = 0; i < params.getPopulationSize(); i++) {
             PossibleSolution<T, O> firstIndividual = randomSelection(population, input, params);
             PossibleSolution<T, O> secondIndividual = randomSelection(population, input, params);
@@ -93,7 +95,7 @@ public abstract class HashCodeEngine<T, I, O> {
     }
 
     private PossibleSolution<T, O> mutate(PossibleSolution<T, O> solution,
-                                                                GAParams params) {
+                                          GAParams params) {
         for (int i = 0; i < solution.getSize(); i++) {
             if (Math.random() <= params.getMutationRate()) {
                 IntStream.range(0, params.getMutationTotal())

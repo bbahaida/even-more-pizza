@@ -12,10 +12,10 @@ public abstract class Reader<I> {
 
     public I read(String path) {
         List<String> lines = getLines(path);
-        return parse(lines);
+        return parse(lines, path.substring(path.lastIndexOf('/')));
     }
 
-    protected abstract I parse(List<String> lines);
+    protected abstract I parse(List<String> lines, String filename);
 
     public List<String> getLines(String filepath) {
 

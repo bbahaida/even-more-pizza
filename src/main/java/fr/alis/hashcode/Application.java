@@ -34,8 +34,8 @@ public class Application extends HashCodeEngine<Pizza, EvenMorePizzaInput, EvenM
                 "e_many_teams");
 
         GAParams paramsA = GAParams.builder()
-                .maxGeneration(5)
-                .mutationRate(0.35)
+                .maxGeneration(1)
+                .mutationRate(0)
                 .tournamentSize(10)
                 .populationSize(10)
                 .filename(files.get(0))
@@ -45,7 +45,7 @@ public class Application extends HashCodeEngine<Pizza, EvenMorePizzaInput, EvenM
                 .mutationRate(0.45)
                 .tournamentSize(10)
                 .mutationTotal(20)
-                .populationSize(1)
+                .populationSize(20)
                 .filename(files.get(1))
                 .deltaConstant(10)
                 .deltaVariance(0.001)

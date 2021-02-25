@@ -50,9 +50,9 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
             if (members <= availablePizza.size() && teamAvailable(members)) {
                 for (int j = 0; j < members; j++) {
                     Pizza pizza = getBestPizza(availablePizza, team.getPizzas());
-                    int pizzaIndex = availablePizza.indexOf(pizza);
+
                     team.getPizzas().add(pizza);
-                    availablePizza.remove(pizzaIndex);
+                    availablePizza.removeIf(p -> p.getIndex() == pizza.getIndex());
                 }
                 teams.add(team);
                 decreaseTeam(members);
@@ -60,7 +60,7 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
         } while (members <= availablePizza.size() && deliverable(availablePizza.size()));
         Instant finish = Instant.now();
         long timeElapsed = Duration.between(start, finish).toMillis();
-        System.out.printf("initializing took %d ms, score: %d%n", timeElapsed, getScore());
+        System.out.printf("initializing %s took %d ms, score: %d%n", input.getFilename(), timeElapsed, getScore());
     }
 
     private int getTeamMembers() {
@@ -104,7 +104,7 @@ public class Distribution implements PossibleSolution<Pizza, EvenMorePizzaOutput
 
         int temp = 100;
         int startIndex = 0;
-        double coolingRate = 0.02;
+        double coolingRate = 0.002;
         while (temp > 1) {
             int index = randomGenerator.nextInt(availablePizza.size() - startIndex) + startIndex;
             Pizza pizza = availablePizza.get(index);

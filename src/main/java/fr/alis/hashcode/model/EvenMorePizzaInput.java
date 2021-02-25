@@ -21,6 +21,7 @@ public class EvenMorePizzaInput {
     private int teamsOfThree;
     private int teamsOfFour;
     private List<Pizza> pizzas;
+    private String filename;
 
     public EvenMorePizzaInput(EvenMorePizzaInput input) {
         availablePizza = input.getAvailablePizza();
@@ -28,6 +29,7 @@ public class EvenMorePizzaInput {
         teamsOfThree = input.getTeamsOfThree();
         teamsOfFour = input.getTeamsOfFour();
         pizzas = new ArrayList<>(input.getPizzas());
+        filename = input.filename;
     }
 
     public EvenMorePizzaInput copy() {
